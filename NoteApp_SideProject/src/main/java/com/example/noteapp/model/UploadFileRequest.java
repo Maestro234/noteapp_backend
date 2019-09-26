@@ -7,8 +7,6 @@ public class UploadFileRequest {
 	private String fileName;
 	private String userName;
 	private MultipartFile file;
-	
-	
 
 	public String getFileName() {
 		return fileName;

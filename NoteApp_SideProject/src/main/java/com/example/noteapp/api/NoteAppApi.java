@@ -102,13 +102,13 @@ public class NoteAppApi {
 	
 	@RequestMapping(value = "/getAllFiles/{criteria}", method = RequestMethod.GET)
 	public ResponseEntity<List<UserFiles>> getAllFiles(@PathVariable("criteria") String criteria){
-		List<UserFiles> notes = userService.getAllfiles(criteria);
+		List<UserFiles> notes = userService.getAllFiles(criteria);
 		return new ResponseEntity<List<UserFiles>> (notes, HttpStatus.OK);
 	}
-//	
-//	@RequestMapping(value="/addfriend/{userId}/{friendId:.+}", method= RequestMethod.POST)
-//	public ResponseEntity<String> addFriend(@PathVariable("userId") Integer userId, @PathVariable("friendId") Integer friendId) throws Exception {
-//		String msg = userService.addFriend(userId, friendId);
-//		return new ResponseEntity<String>(msg, HttpStatus.OK);
-//	}
+
+	@RequestMapping(value="/addfriend/{userId}/{friendId:.+}", method= RequestMethod.POST)
+	public ResponseEntity<String> addFriend(@PathVariable("username") String username, @PathVariable("friendName") String friendName) throws Exception {
+		String msg = userService.addFriend(username, friendName);
+		return new ResponseEntity<String>(msg, HttpStatus.OK);
+	}
 }

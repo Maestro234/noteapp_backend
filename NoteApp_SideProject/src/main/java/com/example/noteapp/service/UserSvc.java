@@ -1,9 +1,6 @@
 package com.example.noteapp.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,26 +18,25 @@ import com.example.noteapp.repository.DBFileDao;
 import com.example.noteapp.repository.UserDao;
 
 @Service("userService")
-@Transactional(readOnly = true)
+@Transactional(readOnly = true) /** only for optimization **/
 public class UserSvc {
+
+	private static final Logger logger = LoggerFactory.getLogger(UserSvc.class);
+	private final BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private UserDao userDao;
 	@Autowired
 	private DBFileDao dbFileDao;
-
-	private static final Logger logger = LoggerFactory.getLogger(UserSvc.class);
-	private final BCryptPasswordEncoder passwordEncoder;
-
 	@Autowired
 	public UserSvc(BCryptPasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 	}
 
 	public User signIn(String username, String password) throws Exception {
+
 		System.out.println("In user service:::: username = " + username);
 		UserEntity ue = userDao.findByUsername(username);
-//		System.out.println("User details:::::::::::::::::" + ue.getUsername());
 		logger.info("User fetched from DB:::::::::" + ue.getUsername() + ":" + ue.getEmailId() + ":" + ue.getId());
 		if (ue == null)
 			throw new Exception("INVALID_CREDENTIAL");
@@ -79,14 +75,13 @@ public class UserSvc {
 	}
 
 	public List<UserFiles> getUserFiles(String username) {
+
 		List<DBFile> dbFile = dbFileDao.findUserFiles(username);
-//		logger.info("Finished fetching files of type" + dbFile.get(0).getClass());
-//		Map<Integer, String> listOfFileNames = new HashMap<>();
+		logger.info("Finished fetching files of type" + dbFile.get(0).getClass());
 		List<UserFiles> returnList = new ArrayList<>();
 
 		for (DBFile db : dbFile) {
 			logger.info("file name::::: " + db.getFileName());
-//			listOfFileNames.put(db.getFileId(), db.getFileName());
 			UserFiles files = new UserFiles();
 			files.setFileId(db.getFileId());
 			files.setFilename(db.getFileName());
@@ -97,10 +92,11 @@ public class UserSvc {
 	}
 	
 	
-	public List<UserFiles> getAllfiles(String criteria) {
+	public List<UserFiles> getAllFiles(String criteria) {
+
 		List<DBFile> files = dbFileDao.searchFilesCriteria(criteria); 
 		List<UserFiles> returnList = new ArrayList<>();
-		
+
 		for(DBFile db : files) {
 			UserFiles uFiles = new UserFiles();
 			uFiles.setFileId(db.getFileId());
@@ -113,9 +109,32 @@ public class UserSvc {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void deleteNotes(Integer fileId, String username) {
-		dbFileDao.deleteFile(fileId, username);
+	public String deleteNotes(Integer fileId, String username) {
 
-		System.out.println("Deleted");
+		Optional<DBFile> file = dbFileDao.findById(fileId);
+
+		if(!file.isPresent())
+			return "File with " + fileId + " does not exist";
+
+		dbFileDao.deleteFile(fileId, username);
+		logger.info("Deleted file:::::::: " + fileId);
+
+		return "File has been deleted";
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public String addFriend(String username, String friend) {
+
+		UserEntity friendFromDB = userDao.findByUsername(friend);
+
+		if(friendFromDB != null){
+			UserEntity userE = userDao.findByUsername(username);
+			if (userE.getFriendIds().contains(friend))
+				return "This user " + friend + " is already your friend";
+
+			userE.getFriendIds().add(friend);
+			userDao.saveAndFlush(userE);
+		}
+		return "Successfully added " + friend + " as a friend";
 	}
 }

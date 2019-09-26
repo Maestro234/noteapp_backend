@@ -36,8 +36,8 @@ public class UserEntity {
 //	joinColumns=@JoinColumn(name="username", referencedColumnName="username"),
 //	inverseJoinColumns=@JoinColumn(name="note_id", referencedColumnName="note_id", unique=true))
 //	private List<Note> notes;
-//	@ElementCollection
-//	private Set<Integer> friendIds = new HashSet<>();
+	@ElementCollection
+	private List<String> friendIds;
 	
 	
 	public String getUsername() {
@@ -47,12 +47,12 @@ public class UserEntity {
 		this.username = username;
 	}
 
-//	public Set<Integer> getFriendIds() {
-//		return friendIds;
-//	}
-//	public void setFriendIds(Set<Integer> friendIds) {
-//		this.friendIds = friendIds;
-//	}
+	public List<String> getFriendIds() {
+		return friendIds;
+	}
+	public void setFriendIds(List<String> friendIds) {
+		this.friendIds = friendIds;
+	}
 	public Integer getId() {
 		return user_id;
 	}

@@ -13,5 +13,4 @@ public interface UserDao extends JpaRepository<UserEntity, Integer> {
 
 	@Query(value="SELECT * FROM users u WHERE u.username = :username", nativeQuery=true)
 	UserEntity findByUsername(@Param("username")String username);
-	
 }

@@ -1,5 +1,6 @@
 package com.example.noteapp.model;
 
+import java.util.List;
 import java.util.Set;
 
 public class User {
@@ -8,6 +9,16 @@ public class User {
 	private String username;
 	private String password;
 	private String email;
+
+	public List<String> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(List<String> friends) {
+		this.friends = friends;
+	}
+
+	private List<String> friends;
 	
 	
 	public String getEmail() {
